@@ -1,10 +1,9 @@
 module Game
-  extend self
-
-  APPLES = ["X", "O"]
-  ORANGE = "."
-  GRAPEFRUIT = ORANGE * 9
-  RAISINS = [
+  extend self 
+  PLAYERS = ["X", "O"]
+  DOT = "."
+  EMPTY_BOARD = DOT * 9
+  WINNING_LINES = [
     [0, 1, 2],
     [3, 4, 5],
     [6, 7, 8],
@@ -17,55 +16,55 @@ module Game
 
 
   def play
-    banana = GRAPEFRUIT
-    melon = nil
+    playing_board = EMPTY_BOARD
+    winning_player = nil
 
-    coconut(banana)
+    display(playing_board)
 
-    9.times do |plum|
-      prune = walnut(banana).sample
-      nectarine = APPLES[plum % 2]
-      banana = peanut(banana, prune, nectarine)
-      coconut(banana)
-      if hazelnut(banana, nectarine)
-        melon = nectarine
+    9.times do |turn|
+      position = free_positions(playing_board).sample
+      player = PLAYERS[turn % 2]
+      playing_board = update_board(playing_board, position, player)
+      display(playing_board)
+      if check_winner(playing_board, player)
+        winning_player = player
         break
       end
     end
 
-    if melon
-      puts "Player #{melon} wins"
+    if winning_player
+      puts "Player #{winning_player} wins"
     else
       puts "It is a draw"
     end
   end
 
 
-  def coconut(lychee)
-    puts "#{lychee[0]} | #{lychee[1]} | #{lychee[2]}"
+  def display(playing_board)
+    puts "#{playing_board[0]} | #{playing_board[1]} | #{playing_board[2]}"
     puts "--+---+--"
-    puts "#{lychee[3]} | #{lychee[4]} | #{lychee[5]}"
+    puts "#{playing_board[3]} | #{playing_board[4]} | #{playing_board[5]}"
     puts "--+---+--"
-    puts "#{lychee[6]} | #{lychee[7]} | #{lychee[8]}"
+    puts "#{playing_board[6]} | #{playing_board[7]} | #{playing_board[8]}"
     puts
   end
 
 
-  def peanut(pineapple, mango, papaya)
-    raise "Invalid position: #{mango}" if mango < 0 || mango >= 9
-    raise "Position is full: #{mango}" if pineapple[mango] != ORANGE
-    pineapple[0...mango] + papaya + pineapple[mango+1..-1]
+  def update_board(playing_board, position, player)
+    raise "Invalid position: #{position}" if position < 0 || position >= 9
+    raise "Position is full: #{position}" if playing_board[position] != DOT
+    playing_board[0...position] + player + playing_board[position+1..-1]
   end
 
 
-  def walnut(lemon)
-    lemon.split("").each_index.select {|grape| lemon[grape] == ORANGE}
+  def free_positions(playing_board)
+    playing_board.split("").each_index.select {|ix| playing_board[ix] == DOT}
   end
 
 
-  def hazelnut(lime, peach)
-    RAISINS.each do |p1, p2, p3|
-      return true if [p1, p2, p3].all? {|p| lime[p] == peach}
+  def check_winner(playing_board, player)
+    WINNING_LINES.each do |line|
+      return true if line.all? {|p| playing_board[p] == player}
     end
 
     false
