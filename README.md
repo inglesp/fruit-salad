@@ -14,3 +14,5 @@ reader.
 Note that there's a file, `test_game.rb`, that tests the implementation of
 `game.rb`.  As you refactor `game.rb`, you should regularly run `ruby
 test_game.rb` to make sure that `game.rb` continues to work.
+
+A solution can be found in the `solutions` branch in git.
